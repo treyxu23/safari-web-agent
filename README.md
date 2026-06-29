@@ -14,6 +14,8 @@
 
 **中文** | [English](#english)
 
+> 我叫徐二三，一行代码都不会写。但用 AI 做出了这个——操控真实 Safari 的浏览器自动化工具。Playwright 搞不定的场景，它搞定。
+
 ## 🤔 痛点
 
 你让 AI Agent "帮我抓一下这个网站的数据"。它用 Playwright 去搞——然后卡住了。
