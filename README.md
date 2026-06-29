@@ -89,6 +89,85 @@ safari_evaluate(`
 
 > Safari Web Agent 不跟它们在无头浏览器赛道卷。它做的事，其他工具**做不到**。
 
+## 🛠️ 能做什么
+
+### 🛒 从已登录后台导出数据
+
+你的 Safari 已经登着拼多多/淘宝卖家中心、飞书后台、Google Analytics。不用重登，直接抓。
+
+```
+> 帮我把拼多多后台近 30 天订单导出为 CSV
+
+safari_navigate("卖家中心 → 订单管理")
+safari_fill("input[name=start]", "2026-06-01")    # 你的登录态，不用重登
+safari_click("查询")
+safari_scroll × 5                                  # 自动翻页
+safari_evaluate(extract_orders)                    # 提取 500 条 → CSV
+✅ 原来 2 小时的手工活，30 秒
+```
+
+### 🛡️ 爬 Cloudflare 保护的网站
+
+ProductHunt、G2、很多 SaaS 官网都有 Cloudflare。Playwright 卡在 "Just a moment..."，Safari 的 `native_click` 直接过。
+
+```
+> 把 ProductHunt AI 话题前 20 个工具抓出来
+
+safari_navigate("producthunt.com/topics/ai")
+safari_scroll(× 5)          # Cloudflare 没拦，直接加载
+safari_evaluate → 20 条结构化数据
+✅ 姓名、票数、简介、链接，8 秒
+```
+
+### ✍️ 填富文本编辑器不丢内容
+
+Notion、飞书文档、Medium 用 ProseMirror/Slate，`fill()` 改了 DOM 但框架状态没变，提交时内容是空的。`native_type` 走剪贴板，框架自动同步。
+
+```
+> 帮我把这篇 3000 字草稿填进 Notion
+
+safari_native_type(value=全文, selector=".ProseMirror")
+safari_verify_state → ✅ 3000 字全部同步
+```
+
+### 📊 批量多站点比价
+
+同时开 3 个 Safari 标签页，分别搜同一商品，一次提取所有价格。
+
+```
+> 同时查京东、淘宝、拼多多的 iPhone 16 Pro 价格
+
+safari_navigate("京东搜索")
+safari_evaluate → ¥7999
+safari_new_tab("淘宝搜索")
+safari_evaluate → ¥7899
+safari_new_tab("拼多多搜索")
+safari_evaluate → ¥7699
+✅ 三平台价格对比，15 秒
+```
+
+### 🔐 自动化 GitHub 操作
+
+连 GitHub Settings 这种有 sudo 模式保护的页面也能操作。
+
+```
+> 帮我建一个带 repo + workflow scope 的 GitHub Token
+
+safari_navigate("github.com/settings/tokens/new")
+safari_fill(note="my-token")
+safari_evaluate(check_scope_boxes)
+safari_click("Generate token")
+✅ 全自动，不用手动点 20 个 checkbox
+```
+
+### 📋 更多
+
+| 场景 | 说明 | 示例文件 |
+|------|------|---------|
+| 定时监控页面变化 | 价格变动、库存更新自动通知 | `templates/monitor.md` |
+| PWA 审计 | 检查网站在 iOS Safari 上的表现 | `references/tools-reference.md#webkit` |
+| 表单批量提交 | 自动填 100 条数据进后台 | `templates/form.md` |
+
 ## 📦 安装
 
 ### ⚡ 30 秒上手
