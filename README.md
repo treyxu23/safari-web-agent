@@ -55,6 +55,8 @@ safari_evaluate  → [ {name: "Claude Code", votes: "▲2,847", ...}, ... ]
 
 ## ⚡ 快速 Demo
 
+![Terminal Demo](assets/demo-terminal.svg)
+
 ```javascript
 // ProductHunt 抓取 — 直接过 Cloudflare
 safari_navigate("https://producthunt.com/topics/ai")
@@ -146,6 +148,9 @@ git clone https://github.com/treyxu23/safari-web-agent.git \
 | [references/anti-detection.md](references/anti-detection.md) | 反爬绕过技术手册 |
 | [references/workflow-patterns.md](references/workflow-patterns.md) | 可复用的自动化模式 |
 | [examples/](examples/) | 真实场景示例 |
+| [REAL-WORLD.md](REAL-WORLD.md) | 真实使用案例 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献指南 |
+| [CHANGELOG.md](CHANGELOG.md) | 版本记录 |
 
 ---
 

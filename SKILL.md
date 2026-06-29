@@ -180,7 +180,7 @@ These are loaded on-demand from references. Quick pointers:
 
 10. **Long strings get truncated** — `safari_fill(value=...)` with 1400+ char values may truncate to ~50-260 chars. Use clipboard pipeline for long content: write to clipboard → `safari_native_type`.
 
-11. **GitHub sudo mode blocks automation** — GitHub's sensitive pages (token creation, settings) trigger a "Verify your identity" challenge that Safari MCP cannot bypass. When you hit this: tell the user to manually authenticate, wait for confirmation, then continue. For `gh` CLI auth, prefer `gh auth login -w` (browser-based OAuth) over `gh auth login --with-token` — the browser flow is more reliable. Never embed raw tokens in inline scripts (they get corrupted). See `references/github-token-automation.md` for the full workflow including REST API fallback for pushing workflow files.
+11. **GitHub sudo mode blocks automation** — GitHub's sensitive pages (token creation, settings) trigger a "Verify your identity" challenge that Safari MCP cannot bypass. When you hit this: tell the user to manually authenticate, wait for confirmation, then continue. For `gh` CLI auth, prefer `gh auth login -w` (browser-based OAuth) over `gh auth login --with-token` — the browser flow is more reliable. Never embed raw tokens in inline scripts (they get corrupted). See `references/github-token-automation.md` for the token workflow and `references/skill-publishing-to-github.md` for the full publishing pipeline.
 
 ## Verification Checklist
 
@@ -201,6 +201,7 @@ After any web automation task:
 | `references/anti-detection.md` | Techniques for bypassing anti-bot detection |
 | `references/workflow-patterns.md` | Reusable patterns for common automation tasks |
 | `references/github-token-automation.md` | Creating GitHub PATs via Safari MCP |
+| `references/skill-publishing-to-github.md` | End-to-end workflow for publishing a Hermes Skill to GitHub |
 | `scripts/install.sh` | One-click Safari MCP installer |
 | `templates/scrape.md` | Data scraping workflow template |
 | `templates/form.md` | Form automation workflow template |
