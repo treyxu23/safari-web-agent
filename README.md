@@ -59,14 +59,22 @@ safari_evaluate(`
 // → [{ name: "Claude Code", votes: "▲2,847", tagline: "..." }, ...]
 ```
 
-## 🆚 和 Playwright 的核心区别
+## 🆚 对比其他工具
 
-| 场景 | Playwright | Safari Web Agent |
-|------|-----------|------------------|
-| 打开 Gmail/Notion | 要重新登录，可能触发验证码 | 你的 Safari 已经登着 ✅ |
-| Cloudflare 防护的网站 | 卡在"Just a moment..." | `native_click` 原生事件直接过 ✅ |
-| Notion/Linear 编辑器 | `fill()` 改了 DOM，提交时内容消失 ❌ | `native_type` 剪贴板粘贴，框架状态同步 ✅ |
-| 安装体积 | ~500MB（Node + 浏览器） | 0（Safari 预装） |
+| 维度 | Safari Web Agent | Playwright | Puppeteer | Selenium |
+|------|:---:|:---:|:---:|:---:|
+| **登录态** | ✅ 真实 Safari，已登录 | ❌ 新浏览器，重登 | ❌ 新浏览器，重登 | ❌ 新浏览器，重登 |
+| **Cloudflare 绕过** | ✅ `native_click` 原生事件 | ❌ 被拦 | ❌ 被拦 | ❌ 被拦 |
+| **DataDome/Akamai** | ✅ 真人级别 CGEvent | ❌ 被识别为 bot | ❌ 被识别为 bot | ❌ 被识别为 bot |
+| **富文本编辑器** | ✅ 剪贴板粘贴，状态同步 | ❌ DOM fill，状态不同步 | ❌ DOM fill，状态不同步 | ❌ DOM fill，状态不同步 |
+| **安装体积** | 0（Safari 预装） | ~500MB | ~400MB | ~300MB |
+| **启动速度** | 即开即用 | 3-5 秒 | 2-4 秒 | 3-8 秒 |
+| **跨平台** | ❌ 仅 macOS | ✅ Win/Mac/Linux | ✅ Win/Mac/Linux | ✅ Win/Mac/Linux |
+| **CI/CD** | ❌ 需 macOS GUI | ✅ 无头模式 | ✅ 无头模式 | ✅ 无头模式 |
+| **WebKit 真机测试** | ✅ 真实 Safari | ❌ WebKit 模拟 | ❌ | ❌ |
+| **CSP 阻断时** | ✅ AppleScript 降级 | ❌ 报错 | ❌ 报错 | ❌ 报错 |
+
+> **结论**：Safari Web Agent 不做 Playwright 能做的事。它做 Playwright **做不到**的事。
 
 ## 📦 安装
 
@@ -141,14 +149,22 @@ Safari Web Agent solves all three.
 curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
 ```
 
-### Why Safari over Playwright?
+### Comparison
 
-| Scenario | Playwright | Safari Web Agent |
-|----------|-----------|------------------|
-| Gmail, Notion, etc. | Re-login, CAPTCHA risk | Already logged in ✅ |
-| Cloudflare-protected | Stuck on challenge | Native events bypass ✅ |
-| ProseMirror editors | DOM fill → stale state ❌ | Native paste → synced ✅ |
-| Install size | ~500MB | 0 (Safari built-in) |
+| Feature | Safari Web Agent | Playwright | Puppeteer | Selenium |
+|---------|:---:|:---:|:---:|:---:|
+| **Login sessions** | ✅ Real Safari, logged in | ❌ Fresh browser | ❌ Fresh browser | ❌ Fresh browser |
+| **Cloudflare bypass** | ✅ `native_click` CGEvent | ❌ Blocked | ❌ Blocked | ❌ Blocked |
+| **Anti-bot (DataDome)** | ✅ Human-level events | ❌ Flagged as bot | ❌ Flagged as bot | ❌ Flagged as bot |
+| **Rich text editors** | ✅ Native paste, synced state | ❌ DOM fill, stale state | ❌ DOM fill, stale state | ❌ DOM fill, stale state |
+| **Install size** | 0 (Safari built-in) | ~500MB | ~400MB | ~300MB |
+| **Startup time** | Instant | 3-5s | 2-4s | 3-8s |
+| **Cross-platform** | ❌ macOS only | ✅ All | ✅ All | ✅ All |
+| **CI/CD** | ❌ Needs macOS GUI | ✅ Headless | ✅ Headless | ✅ Headless |
+| **WebKit testing** | ✅ Real Safari | ❌ WebKit only | ❌ | ❌ |
+| **CSP fallback** | ✅ AppleScript | ❌ Fails | ❌ Fails | ❌ Fails |
+
+> **TL;DR**: Safari Web Agent doesn't do what Playwright can do. It does what Playwright **can't**.
 
 ---
 
