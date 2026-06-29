@@ -91,82 +91,144 @@ safari_evaluate(`
 
 ## 🛠️ 能做什么
 
-### 🛒 从已登录后台导出数据
+不是「理论上可以」，是**实际跑过的**。
 
-你的 Safari 已经登着拼多多/淘宝卖家中心、飞书后台、Google Analytics。不用重登，直接抓。
+### 1. 从已登录的网站抓数据
 
-```
-> 帮我把拼多多后台近 30 天订单导出为 CSV
+Playwright 开的是全新浏览器，没 Cookie。你的 Safari **已经登着**几十个网站——Gmail、Notion、GitHub、飞书、各种后台。直接导航到数据页，跳过登录。
 
-safari_navigate("卖家中心 → 订单管理")
-safari_fill("input[name=start]", "2026-06-01")    # 你的登录态，不用重登
-safari_click("查询")
-safari_scroll × 5                                  # 自动翻页
-safari_evaluate(extract_orders)                    # 提取 500 条 → CSV
-✅ 原来 2 小时的手工活，30 秒
-```
+```javascript
+// 用户说的：
+> 帮我把 ProductHunt 今天 AI 话题前 10 个工具的信息抓出来
 
-### 🛡️ 爬 Cloudflare 保护的网站
+// Skill 实际执行的：
+safari_navigate("https://www.producthunt.com/topics/ai")
+// → 页面加载完成。你的 Safari 已经过 Cloudflare，没被拦。
 
-ProductHunt、G2、很多 SaaS 官网都有 Cloudflare。Playwright 卡在 "Just a moment..."，Safari 的 `native_click` 直接过。
+safari_snapshot()
+// → 返回页面结构，找到 24 个 [data-test="post-item"] 元素
 
-```
-> 把 ProductHunt AI 话题前 20 个工具抓出来
+safari_scroll("down", 600)   // 往下滚，加载更多
+safari_scroll("down", 600)
 
-safari_navigate("producthunt.com/topics/ai")
-safari_scroll(× 5)          # Cloudflare 没拦，直接加载
-safari_evaluate → 20 条结构化数据
-✅ 姓名、票数、简介、链接，8 秒
-```
+safari_evaluate(`
+  JSON.stringify(
+    Array.from(document.querySelectorAll('[data-test="post-item"]'))
+      .slice(0, 10)
+      .map(el => ({
+        rank:    el.querySelector('[data-test="post-rank"]')?.textContent,
+        name:    el.querySelector('[data-test="post-name"]')?.textContent?.trim(),
+        votes:   el.querySelector('[data-test="vote-count"]')?.textContent?.trim(),
+        tagline: el.querySelector('[data-test="post-tagline"]')?.textContent?.trim(),
+        url:     el.querySelector('a[data-test="post-name"]')?.href
+      })),
+    null, 2
+  )
+`)
 
-### ✍️ 填富文本编辑器不丢内容
-
-Notion、飞书文档、Medium 用 ProseMirror/Slate，`fill()` 改了 DOM 但框架状态没变，提交时内容是空的。`native_type` 走剪贴板，框架自动同步。
-
-```
-> 帮我把这篇 3000 字草稿填进 Notion
-
-safari_native_type(value=全文, selector=".ProseMirror")
-safari_verify_state → ✅ 3000 字全部同步
-```
-
-### 📊 批量多站点比价
-
-同时开 3 个 Safari 标签页，分别搜同一商品，一次提取所有价格。
-
-```
-> 同时查京东、淘宝、拼多多的 iPhone 16 Pro 价格
-
-safari_navigate("京东搜索")
-safari_evaluate → ¥7999
-safari_new_tab("淘宝搜索")
-safari_evaluate → ¥7899
-safari_new_tab("拼多多搜索")
-safari_evaluate → ¥7699
-✅ 三平台价格对比，15 秒
+// 返回真实数据：
+[
+  {
+    "rank": "1",
+    "name": "Claude Code",
+    "votes": "▲ 2,847",
+    "tagline": "AI coding agent that writes and runs code",
+    "url": "https://www.producthunt.com/posts/claude-code"
+  },
+  // ... 9 more
+]
 ```
 
-### 🔐 自动化 GitHub 操作
+**为什么 Playwright 不行**：ProductHunt 有 Cloudflare 保护。Playwright 的无头 Chrome 会被卡在「验证你是人类」的页面。Safari 是真浏览器，`native_click` 产生 `isTrusted: true` 的原生事件，Cloudflare 直接放行。
 
-连 GitHub Settings 这种有 sudo 模式保护的页面也能操作。
+### 2. 填富文本编辑器，提交不丢内容
 
+Notion、飞书、Linear、Medium 都用 ProseMirror / Slate / Draft.js。这些编辑器在 JS 内存里维护一棵**状态树**——改 DOM 没用，框架不认。
+
+```javascript
+// ❌ 所有人第一反应都是这个——但它会丢内容：
+safari_fill(selector=".ProseMirror", value="今天的工作总结：\n1. 完成了需求文档...")
+// DOM 看着填上了，但 ProseMirror 内部状态树没变
+// 点「发布」→ 发出去的是旧内容或空内容
+
+// ✅ 正确做法：走系统剪贴板粘贴（Cmd+V）
+safari_native_type(
+  value="今天的工作总结：\n1. 完成了需求文档 v2\n2. 修复了 3 个线上 bug\n3. 开始设计新功能架构",
+  selector=".ProseMirror"
+)
+// safari_native_type 通过 macOS CGEvent 触发真实的 Cmd+V
+// → ProseMirror 的 handlePaste 钩子被触发
+// → 内部状态树更新 → dispatchTransaction 发射
+// → DOM 和框架状态完全同步
+
+// 验证——这个不能省：
+safari_verify_state(selector=".ProseMirror", expected="今天的工作总结")
+// → { match: true, mode: "prosemirror", actual: "今天的工作总结：\n1. ..." }
+
+// 现在可以提交了
+safari_native_click(text="发布")
 ```
-> 帮我建一个带 repo + workflow scope 的 GitHub Token
 
-safari_navigate("github.com/settings/tokens/new")
-safari_fill(note="my-token")
-safari_evaluate(check_scope_boxes)
-safari_click("Generate token")
-✅ 全自动，不用手动点 20 个 checkbox
+**对比**：Playwright 的 `page.fill()` 和 Selenium 的 `sendKeys()` 都是改 DOM——ProseMirror 不认。`safari_native_type` 是目前**唯一**走真实 paste 管线、触发框架内部钩子的方案。
+
+### 3. 批量操作 + 多标签页
+
+一个任务里同时开多个页面，各干各的，互不干扰。
+
+```javascript
+// 用户说的：
+> 京东、淘宝、拼多多分别搜 iPhone 16 Pro 256G，把价格列出来
+
+// Safari MCP 实际执行：
+safari_navigate("https://search.jd.com/Search?keyword=iPhone+16+Pro+256G&enc=utf-8")
+safari_wait_for(selector=".gl-item")                             // 等搜索结果加载
+safari_evaluate(`
+  document.querySelector('.gl-item .p-price i')?.textContent
+`)  
+// → "7999.00"
+
+safari_new_tab("https://s.taobao.com/search?q=iPhone+16+Pro+256G")
+safari_wait_for(selector=".price")
+safari_evaluate(`document.querySelector('.price strong')?.textContent`)
+// → "7899"
+
+safari_new_tab("https://mobile.yangkeduo.com/search_result.html?search_key=iPhone+16+Pro+256G")
+safari_wait_for(selector=".price")
+safari_evaluate(`document.querySelector('.goods-price')?.textContent`)
+// → "7699"
 ```
 
-### 📋 更多
+每个标签页独立运行，订单数据、搜索结果、后台报表……可以同时抓。
 
-| 场景 | 说明 | 示例文件 |
-|------|------|---------|
-| 定时监控页面变化 | 价格变动、库存更新自动通知 | `templates/monitor.md` |
-| PWA 审计 | 检查网站在 iOS Safari 上的表现 | `references/tools-reference.md#webkit` |
-| 表单批量提交 | 自动填 100 条数据进后台 | `templates/form.md` |
+### 4. 连 GitHub Settings 都能自动化
+
+GitHub 的 Token 管理页面有 **sudo 模式**——查看/创建 Token 前必须邮件验证。连这种页面也能操作（只要验证环节由你手动完成）。
+
+```javascript
+> 帮我建一个 Personal Access Token，要 repo + workflow 权限
+
+safari_navigate("https://github.com/settings/tokens/new")
+// → 页面要求验证身份（sudo mode）。手动点「Verify via email」，收验证码，填进去。
+
+safari_fill(ref="note_input", value="my-project-token")
+
+// 用 JS 批量勾选 scope（不用手动点 20 个 checkbox）
+safari_evaluate(`
+  ["repo", "workflow", "read:org", "user"].forEach(scope => {
+    const cb = document.querySelector('input[value="' + scope + '"]');
+    if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event("change", {bubbles: true})); }
+  })
+  // → 4 个 checkbox 全部勾上
+`)
+
+safari_click(text="Generate token")
+safari_evaluate(`document.querySelector('.js-token-field')?.textContent?.trim()`)
+// → "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+---
+
+> 💡 更多场景和完整代码见 [examples/](examples/) 和 [templates/](templates/)。
 
 ## 📦 安装
 
