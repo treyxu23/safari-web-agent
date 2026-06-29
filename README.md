@@ -56,7 +56,7 @@ safari_evaluate  → [ {name: "Claude Code", votes: "▲2,847", ...}, ... ]
 
 ## ⚡ 快速 Demo
 
-![Terminal Demo](assets/demo-terminal.svg)
+![Terminal Demo](assets/demo-animated.svg)
 
 ```javascript
 // ProductHunt 抓取 — 直接过 Cloudflare
