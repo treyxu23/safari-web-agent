@@ -41,6 +41,18 @@ safari_evaluate  → [ {name: "Claude Code", votes: "▲2,847", ...}, ... ]
 ✅ 10 条数据，8 秒搞定
 ```
 
+## 🎯 适合谁
+
+| 你是 | 你能用它做什么 |
+|------|--------------|
+| 🧑‍💻 macOS 开发者 | 从需要登录的后台/仪表盘自动导出数据 |
+| 📊 数据采集者 | 爬 Cloudflare 保护的网站，其他工具全挂 |
+| ✍️ 内容创作者 | 自动填 Notion/飞书/Medium 的长文，不会丢内容 |
+| 🧪 QA/测试 | 在真实 Safari 上做端到端测试 + PWA 审计 |
+| 🤖 AI Agent 用户 | 给 Hermes/Claude Code 装上「眼睛和手」 |
+
+不是给你的：❌ Windows/Linux 用户 ❌ 需要跑在 CI 服务器上的 ❌ 简单 API 调用的（用 curl 就行）
+
 ## ⚡ 快速 Demo
 
 ```javascript
@@ -61,25 +73,32 @@ safari_evaluate(`
 
 ## 🆚 对比其他工具
 
-| 维度 | Safari Web Agent | Playwright | Puppeteer | Selenium |
-|------|:---:|:---:|:---:|:---:|
-| **登录态** | ✅ 真实 Safari，已登录 | ❌ 新浏览器，重登 | ❌ 新浏览器，重登 | ❌ 新浏览器，重登 |
-| **Cloudflare 绕过** | ✅ `native_click` 原生事件 | ❌ 被拦 | ❌ 被拦 | ❌ 被拦 |
-| **DataDome/Akamai** | ✅ 真人级别 CGEvent | ❌ 被识别为 bot | ❌ 被识别为 bot | ❌ 被识别为 bot |
-| **富文本编辑器** | ✅ 剪贴板粘贴，状态同步 | ❌ DOM fill，状态不同步 | ❌ DOM fill，状态不同步 | ❌ DOM fill，状态不同步 |
-| **安装体积** | 0（Safari 预装） | ~500MB | ~400MB | ~300MB |
-| **启动速度** | 即开即用 | 3-5 秒 | 2-4 秒 | 3-8 秒 |
-| **跨平台** | ❌ 仅 macOS | ✅ Win/Mac/Linux | ✅ Win/Mac/Linux | ✅ Win/Mac/Linux |
-| **CI/CD** | ❌ 需 macOS GUI | ✅ 无头模式 | ✅ 无头模式 | ✅ 无头模式 |
-| **WebKit 真机测试** | ✅ 真实 Safari | ❌ WebKit 模拟 | ❌ | ❌ |
-| **CSP 阻断时** | ✅ AppleScript 降级 | ❌ 报错 | ❌ 报错 | ❌ 报错 |
+| 维度 | Safari Web Agent | Playwright | browser-use | camofox-mcp | Puppeteer | Selenium |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|
+| **登录态** | ✅ 真实已登录 | ❌ | ❌ | ⚠️ 手动导 cookie | ❌ | ❌ |
+| **Cloudflare** | ✅ 原生 CGEvent | ❌ | ❌ | ⚠️ Firefox 仍被检测 | ❌ | ❌ |
+| **反爬（DataDome）** | ✅ 真人级别 | ❌ | ❌ | ⚠️ 指纹随机化有限 | ❌ | ❌ |
+| **富文本编辑器** | ✅ 剪贴板粘贴 | ❌ DOM fill | ❌ DOM fill | ❌ DOM fill | ❌ DOM fill | ❌ DOM fill |
+| **CSP 阻断** | ✅ AppleScript 降级 | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **安装体积** | 0（Safari 预装） | ~500MB | ~600MB | ~400MB | ~400MB | ~300MB |
+| **WebKit 真机** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **跨平台** | ❌ 仅 macOS | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **CI/CD** | ❌ 需 GUI | ✅ | ✅ | ⚠️ 需 GUI | ✅ | ✅ |
 
-> **结论**：Safari Web Agent 不做 Playwright 能做的事。它做 Playwright **做不到**的事。
+> Safari Web Agent 不跟它们在无头浏览器赛道卷。它做的事，其他工具**做不到**。
 
 ## 📦 安装
 
+### ⚡ 30 秒上手
+
 ```bash
-# 一键安装
+npm install -g safari-mcp
+# Safari → 设置 → 扩展 → 启用 "Safari MCP"
+# 系统设置 → 隐私 → 自动化 → 允许终端控制 Safari
+# 搞定。下面是详细步骤，遇到问题再看。
+```
+
+### 一键安装脚本
 curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
 
 # 或手动
@@ -151,20 +170,19 @@ curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scri
 
 ### Comparison
 
-| Feature | Safari Web Agent | Playwright | Puppeteer | Selenium |
-|---------|:---:|:---:|:---:|:---:|
-| **Login sessions** | ✅ Real Safari, logged in | ❌ Fresh browser | ❌ Fresh browser | ❌ Fresh browser |
-| **Cloudflare bypass** | ✅ `native_click` CGEvent | ❌ Blocked | ❌ Blocked | ❌ Blocked |
-| **Anti-bot (DataDome)** | ✅ Human-level events | ❌ Flagged as bot | ❌ Flagged as bot | ❌ Flagged as bot |
-| **Rich text editors** | ✅ Native paste, synced state | ❌ DOM fill, stale state | ❌ DOM fill, stale state | ❌ DOM fill, stale state |
-| **Install size** | 0 (Safari built-in) | ~500MB | ~400MB | ~300MB |
-| **Startup time** | Instant | 3-5s | 2-4s | 3-8s |
-| **Cross-platform** | ❌ macOS only | ✅ All | ✅ All | ✅ All |
-| **CI/CD** | ❌ Needs macOS GUI | ✅ Headless | ✅ Headless | ✅ Headless |
-| **WebKit testing** | ✅ Real Safari | ❌ WebKit only | ❌ | ❌ |
-| **CSP fallback** | ✅ AppleScript | ❌ Fails | ❌ Fails | ❌ Fails |
+| Feature | Safari Web Agent | Playwright | browser-use | camofox-mcp | Puppeteer | Selenium |
+|---------|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Login sessions** | ✅ Real, logged in | ❌ | ❌ | ⚠️ Manual cookie | ❌ | ❌ |
+| **Cloudflare bypass** | ✅ Native CGEvent | ❌ | ❌ | ⚠️ Firefox detected | ❌ | ❌ |
+| **Anti-bot (DataDome)** | ✅ Human-level | ❌ | ❌ | ⚠️ Limited fingerprinting | ❌ | ❌ |
+| **Rich text editors** | ✅ Native paste | ❌ DOM fill | ❌ DOM fill | ❌ DOM fill | ❌ DOM fill | ❌ DOM fill |
+| **CSP fallback** | ✅ AppleScript | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Install size** | 0 (Safari built-in) | ~500MB | ~600MB | ~400MB | ~400MB | ~300MB |
+| **WebKit testing** | ✅ Real Safari | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Cross-platform** | ❌ macOS only | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **CI/CD** | ❌ Needs GUI | ✅ | ✅ | ⚠️ Needs GUI | ✅ | ✅ |
 
-> **TL;DR**: Safari Web Agent doesn't do what Playwright can do. It does what Playwright **can't**.
+> Safari Web Agent doesn't compete in headless browser space. It does things no other tool **can**.
 
 ---
 
