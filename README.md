@@ -16,31 +16,28 @@
 
 ## 🤔 痛点
 
-你让 AI Agent "帮我抓一下这个网站的数据"或"帮我填这个表单"。它用 Playwright/Puppeteer 去搞：
+你让 AI Agent "帮我抓一下这个网站的数据"。它用 Playwright 去搞——然后卡住了。
 
 ```
 ❌ "请先登录"               → 没 Cookie，全新浏览器，验证码地狱
 ❌ "验证你是人类..."         → Cloudflare 把无头 Chrome 拦了
-❌ 表单看着填好了，提交却是空的 → ProseMirror 框架状态没同步，发了旧数据
+❌ 表单填好了，提交却是空的   → ProseMirror 框架状态没同步
 ```
 
-## 🦊 解法
+## 🦊 解法：用你**自己的** Safari
 
-**Safari Web Agent** — Claude Code & Hermes Skill，操控你**真实的 Safari 浏览器**。96 个 Safari MCP 工具，原生 macOS CGEvent 事件。零安装（Safari 预装）。
+你每天用 Safari 登录了几十个网站——Gmail、Notion、GitHub、飞书、淘宝。这个 Skill 直接操控**你的** Safari，带着你的登录态、你的 Cookie、你的一切。
 
 ```bash
-# 你的 Safari 已经登录了 Gmail、Notion、GitHub、飞书、淘宝……
-# Safari 的原生事件（CGEvent）跟人手点击没区别，反爬直接过
-# 剪贴板粘贴（Cmd+V）走真实 paste 管线，框架状态自动同步
-
-$ hermes
-> 帮我把 ProductHunt 前 10 个 AI 工具的名字和票数抓出来
-
-safari_navigate → 已打开
+$ 「帮我把 ProductHunt 前 10 个 AI 工具抓出来」
+safari_navigate → 页面已加载（过了 Cloudflare）
 safari_snapshot  → 找到 24 个工具
-safari_evaluate  → [ {name: "Claude Code", votes: "▲2,847", ...}, ... ]
-✅ 10 条数据，8 秒搞定
+safari_evaluate  → [{name:"Claude Code", votes:"▲2,847"}, ...]
+✅ 10 条数据，8 秒。Playwright 在这页已经卡了 5 分钟。
 ```
+
+> [!IMPORTANT]
+> **为什么 Playwright 不行？** Playwright 开的是全新无头浏览器。Safari Web Agent 用的是你**真实的 Safari**——已经登录、已经过了 Cloudflare、已经有 Cookie。这不是「更好的 Playwright」，是**完全不同的思路**。
 
 ## 🎯 适合谁
 

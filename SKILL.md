@@ -200,6 +200,8 @@ After any web automation task:
 | `references/tools-reference.md` | Complete Safari MCP tool catalog (96 tools) |
 | `references/anti-detection.md` | Techniques for bypassing anti-bot detection |
 | `references/workflow-patterns.md` | Reusable patterns for common automation tasks |
+| `references/demo-techniques.md` | Creating animated SVG terminal demos for GitHub |
+| `references/claude-code-compatibility.md` | Making Hermes Skills work as Claude Code plugins |
 | `references/github-token-automation.md` | Creating GitHub PATs via Safari MCP |
 | `references/skill-publishing-to-github.md` | End-to-end workflow for publishing a Hermes Skill to GitHub |
 | `scripts/install.sh` | One-click Safari MCP installer |
