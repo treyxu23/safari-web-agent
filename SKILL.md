@@ -180,7 +180,7 @@ These are loaded on-demand from references. Quick pointers:
 
 10. **Long strings get truncated** — `safari_fill(value=...)` with 1400+ char values may truncate to ~50-260 chars. Use clipboard pipeline for long content: write to clipboard → `safari_native_type`.
 
-11. **GitHub sudo mode blocks automation** — GitHub's sensitive pages (token creation, settings) trigger a "Verify your identity" challenge that Safari MCP cannot bypass. When you hit this: tell the user to manually authenticate, wait for confirmation, then continue. See `references/github-token-automation.md` for the full token creation workflow.
+11. **GitHub sudo mode blocks automation** — GitHub's sensitive pages (token creation, settings) trigger a "Verify your identity" challenge that Safari MCP cannot bypass. When you hit this: tell the user to manually authenticate, wait for confirmation, then continue. For `gh` CLI auth, prefer `gh auth login -w` (browser-based OAuth) over `gh auth login --with-token` — the browser flow is more reliable. Never embed raw tokens in inline scripts (they get corrupted). See `references/github-token-automation.md` for the full workflow including REST API fallback for pushing workflow files.
 
 ## Verification Checklist
 

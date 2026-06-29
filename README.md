@@ -1,6 +1,8 @@
-# 🧭 Safari Web Agent
-
-> **Web automation that works where Playwright fails — using your real Safari browser.**
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="assets/banner.svg">
+  <source media="(prefers-color-scheme: light)" srcset="assets/banner.svg">
+  <img alt="Safari Web Agent — Web automation using your real Safari browser" src="assets/banner.svg" width="100%">
+</picture>
 
 [![SKILL.md Valid](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml/badge.svg)](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -11,35 +13,50 @@
 
 **English** | [中文](#中文)
 
-## What is this?
+## 🤔 The Problem
 
-A **Hermes Agent Skill** that gives AI agents the power to control your real Safari browser — with your login sessions, your cookies, and native macOS events that bypass anti-bot detection.
+You ask an AI agent to "scrape this site" or "fill this form". It uses Playwright/Puppeteer. Then:
 
-Most web automation tools launch a fresh headless browser. They work fine until they hit:
-- 🔐 A login-walled site (no cookies, have to re-auth → CAPTCHA)
-- 🛡️ An anti-bot page (Cloudflare "Just a moment..." → stuck forever)
-- ✍️ A rich text editor (ProseMirror/Draft.js → fills DOM but framework state stays stale)
+```
+❌ "Please log in"           → No cookies, fresh browser, CAPTCHA hell
+❌ "Just a moment..."        → Cloudflare flags headless Chrome  
+❌ Form looks filled but...  → Submit sends OLD data (ProseMirror state desync)
+```
 
-Safari Web Agent solves all three. Your Safari is already logged into everything. Native macOS CGEvent clicks have `isTrusted: true` — indistinguishable from a human. Clipboard-native paste works where DOM manipulation breaks.
+## 🦊 The Solution
 
-## Quick Demo
+**Safari Web Agent** — a Hermes Skill that drives your REAL Safari browser.
+
+```bash
+# Your Safari is already logged into Gmail, Notion, GitHub, everything.
+# Safari's native events (CGEvent) are indistinguishable from human clicks.
+# Clipboard-native paste (Cmd+V) syncs framework state where DOM fill breaks.
+
+$ hermes
+> scrape the top 10 AI tools from ProductHunt with votes and taglines
+
+safari_navigate → Done
+safari_snapshot  → 24 items found  
+safari_evaluate  → [ {name: "Claude Code", votes: "▲2,847", ...}, ... ]
+✅ 10 tools extracted in 8 seconds
+```
+
+## ⚡ Quick Demo
 
 ```javascript
-// "Scrape the top 10 AI tools from ProductHunt"
+// ProductHunt scraper — works through Cloudflare
 safari_navigate("https://producthunt.com/topics/ai")
-safari_snapshot()  // → page structure with ref IDs
-safari_scroll(direction="down", amount=600)  // → load more
+safari_wait(2000)
+safari_scroll("down", 600)
 safari_evaluate(`
   Array.from(document.querySelectorAll('[data-test="post-item"]'))
-    .slice(0, 10)
-    .map(el => ({
-      name: el.querySelector('a[data-test="post-name"]')?.textContent,
+    .slice(0, 10).map(el => ({
+      name: el.querySelector('[data-test="post-name"]')?.textContent,
       votes: el.querySelector('[data-test="vote-count"]')?.textContent,
       tagline: el.querySelector('[data-test="post-tagline"]')?.textContent
     }))
 `)
-// → structured JSON with names, votes, taglines
-```
+// → [{ name: "...", votes: "▲2,847", tagline: "..." }, ...]
 
 ## Why Safari over Playwright?
 
