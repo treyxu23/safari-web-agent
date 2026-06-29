@@ -1,7 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/banner.svg">
   <source media="(prefers-color-scheme: light)" srcset="assets/banner.svg">
-  <img alt="Safari Web Agent — Web automation using your real Safari browser" src="assets/banner.svg" width="100%">
+  <img alt="Safari Web Agent — 用你真实的 Safari 浏览器做网页自动化" src="assets/banner.svg" width="100%">
 </picture>
 
 [![SKILL.md Valid](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml/badge.svg)](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml)
@@ -11,40 +11,40 @@
 
 ---
 
-**English** | [中文](#中文)
+**中文** | [English](#english)
 
-## 🤔 The Problem
+## 🤔 痛点
 
-You ask an AI agent to "scrape this site" or "fill this form". It uses Playwright/Puppeteer. Then:
+你让 AI Agent "帮我抓一下这个网站的数据"或"帮我填这个表单"。它用 Playwright/Puppeteer 去搞：
 
 ```
-❌ "Please log in"           → No cookies, fresh browser, CAPTCHA hell
-❌ "Just a moment..."        → Cloudflare flags headless Chrome  
-❌ Form looks filled but...  → Submit sends OLD data (ProseMirror state desync)
+❌ "请先登录"               → 没 Cookie，全新浏览器，验证码地狱
+❌ "验证你是人类..."         → Cloudflare 把无头 Chrome 拦了
+❌ 表单看着填好了，提交却是空的 → ProseMirror 框架状态没同步，发了旧数据
 ```
 
-## 🦊 The Solution
+## 🦊 解法
 
-**Safari Web Agent** — a Hermes Skill that drives your REAL Safari browser.
+**Safari Web Agent** — 一个 Hermes Skill，操控你**真实的 Safari 浏览器**。
 
 ```bash
-# Your Safari is already logged into Gmail, Notion, GitHub, everything.
-# Safari's native events (CGEvent) are indistinguishable from human clicks.
-# Clipboard-native paste (Cmd+V) syncs framework state where DOM fill breaks.
+# 你的 Safari 已经登录了 Gmail、Notion、GitHub、飞书、淘宝……
+# Safari 的原生事件（CGEvent）跟人手点击没区别，反爬直接过
+# 剪贴板粘贴（Cmd+V）走真实 paste 管线，框架状态自动同步
 
 $ hermes
-> scrape the top 10 AI tools from ProductHunt with votes and taglines
+> 帮我把 ProductHunt 前 10 个 AI 工具的名字和票数抓出来
 
-safari_navigate → Done
-safari_snapshot  → 24 items found  
+safari_navigate → 已打开
+safari_snapshot  → 找到 24 个工具
 safari_evaluate  → [ {name: "Claude Code", votes: "▲2,847", ...}, ... ]
-✅ 10 tools extracted in 8 seconds
+✅ 10 条数据，8 秒搞定
 ```
 
-## ⚡ Quick Demo
+## ⚡ 快速 Demo
 
 ```javascript
-// ProductHunt scraper — works through Cloudflare
+// ProductHunt 抓取 — 直接过 Cloudflare
 safari_navigate("https://producthunt.com/topics/ai")
 safari_wait(2000)
 safari_scroll("down", 600)
@@ -56,54 +56,34 @@ safari_evaluate(`
       tagline: el.querySelector('[data-test="post-tagline"]')?.textContent
     }))
 `)
-// → [{ name: "...", votes: "▲2,847", tagline: "..." }, ...]
+// → [{ name: "Claude Code", votes: "▲2,847", tagline: "..." }, ...]
+```
 
-## Why Safari over Playwright?
+## 🆚 和 Playwright 的核心区别
 
-| Scenario | Playwright | Safari Web Agent |
-|----------|-----------|------------------|
-| **Gmail, Notion, etc.** | Must re-login, CAPTCHA risk | Already logged in ✅ |
-| **Cloudflare-protected** | Stuck on "Just a moment..." | Native events bypass it ✅ |
-| **ProseMirror editor** | `fill()` changes DOM, Submit sends stale data ❌ | `native_type` → clipboard paste → framework sync ✅ |
-| **Install size** | ~500MB (Node + browsers) | 0 (Safari pre-installed) |
-| **Cross-platform** | Mac/Win/Linux | macOS only |
+| 场景 | Playwright | Safari Web Agent |
+|------|-----------|------------------|
+| 打开 Gmail/Notion | 要重新登录，可能触发验证码 | 你的 Safari 已经登着 ✅ |
+| Cloudflare 防护的网站 | 卡在"Just a moment..." | `native_click` 原生事件直接过 ✅ |
+| Notion/Linear 编辑器 | `fill()` 改了 DOM，提交时内容消失 ❌ | `native_type` 剪贴板粘贴，框架状态同步 ✅ |
+| 安装体积 | ~500MB（Node + 浏览器） | 0（Safari 预装） |
 
-## Installation
-
-### Prerequisites
-- macOS (Safari is built-in)
-- Node.js (for `npx`)
-
-### One-Click Install
+## 📦 安装
 
 ```bash
+# 一键安装
 curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
+
+# 或手动
+npm install -g safari-mcp     # MCP 服务器
+# Safari → 设置 → 扩展 → 启用 "Safari MCP"
+# 系统设置 → 隐私与安全性 → 自动化 → 允许终端控制 Safari
+# 系统设置 → 隐私与安全性 → 辅助功能 → 允许终端
 ```
 
-Or manually:
+### 接入 Hermes
 
-```bash
-# 1. Install Safari MCP (npm package + Safari extension)
-npm install -g safari-mcp
-
-# 2. Install Safari Extension
-#    → Open Safari → Preferences → Extensions
-#    → Enable "Safari MCP" extension
-#    → In menu bar: Develop → Allow JavaScript from Apple Events
-
-# 3. Grant macOS permissions
-#    → System Settings → Privacy & Security → Automation
-#    → Enable Safari for your terminal app
-#    → System Settings → Privacy & Security → Accessibility
-#    → Enable your terminal app
-
-# 4. Verify
-npx safari-mcp --doctor
-```
-
-### Add to Hermes
-
-Add this to your `~/.hermes/profiles/<profile>/config.yaml`:
+`~/.hermes/profiles/<profile>/config.yaml`:
 
 ```yaml
 mcp_servers:
@@ -115,101 +95,14 @@ mcp_servers:
     timeout: 120
 ```
 
-Then install the skill:
+安装 Skill：
 
 ```bash
 git clone https://github.com/treyxu23/safari-web-agent.git \
   ~/.hermes/profiles/<profile>/skills/safari-web-agent/
 ```
 
-## Use Cases
-
-### 1. Data Scraping (Login-Required)
-Scrape your own data from sites you're already logged into — analytics dashboards, e-commerce seller centers, CRM systems.
-
-### 2. Anti-Bot Bypass
-Automate sites protected by Cloudflare, DataDome, Akamai, G2 — the native CGEvent path produces events indistinguishable from human interaction.
-
-### 3. Rich Text Editor Automation
-Fill ProseMirror (Notion, Linear), Draft.js (Medium), Slate editors correctly — clipboard-native paste goes through the real paste pipeline, syncing framework state.
-
-### 4. Safari/WebKit Testing
-Test PWA readiness, viewport behavior, CSS compatibility on real Safari — `safari_check_pwa()`, `safari_inspect_viewport()`, `safari_webkit_compat()`.
-
-### 5. Page Monitoring
-Monitor pages for changes, track Web Vitals (FCP, LCP, CLS), capture network requests.
-
-## Documentation
-
-| File | Content |
-|------|---------|
-| [SKILL.md](SKILL.md) | Core skill — triggers, workflow, pitfalls |
-| [references/tools-reference.md](references/tools-reference.md) | Complete Safari MCP tool catalog |
-| [references/anti-detection.md](references/anti-detection.md) | Anti-bot bypass techniques |
-| [references/workflow-patterns.md](references/workflow-patterns.md) | Reusable automation patterns |
-| [examples/](examples/) | Real-world examples |
-
-## Architecture
-
-```
-User → Hermes Agent → Safari MCP Server (npx) → Safari Extension → Safari.app
-                         ↕ (AppleScript fallback when JS blocked)
-```
-
-96 tools, two execution paths:
-- **JavaScript path** (fast, most pages) — injects JS via Safari extension
-- **Native path** (anti-bot, CSP-blocked) — CGEvent clicks, clipboard paste, AppleScript
-
-## Comparison with Alternatives
-
-| Feature | Safari Web Agent | playwright-skill | Puppeteer | Selenium |
-|---------|-----------------|------------------|-----------|----------|
-| Real browser sessions | ✅ Your Safari | ❌ Fresh browser | ❌ Fresh browser | ❌ Fresh browser |
-| Anti-bot bypass | ✅ Native events | ❌ Flagged | ❌ Flagged | ❌ Flagged |
-| Rich text editors | ✅ Native paste | ⚠️ DOM fill issues | ⚠️ DOM fill issues | ⚠️ DOM fill issues |
-| Zero install size | ✅ Safari built-in | ❌ ~500MB | ❌ ~400MB | ❌ ~300MB |
-| CI/CD ready | ❌ Needs macOS GUI | ✅ Headless | ✅ Headless | ✅ Headless |
-| Cross-platform | ❌ macOS only | ✅ All | ✅ All | ✅ All |
-| WebKit testing | ✅ Real Safari | ❌ WebKit only | ❌ | ❌ |
-
----
-
-## 中文
-
-### 这是什么？
-
-一个 **Hermes Agent Skill**，让 AI Agent 能操控你真实的 Safari 浏览器——带着你的登录态、Cookie、和能绕过反爬检测的原生 macOS 事件。
-
-市面上的浏览器自动化工具（Playwright、Puppeteer、Selenium）都是开一个全新的无头浏览器。平时能用，但遇到这三种场景就废了：
-- 🔐 需要登录的网站（没 Cookie，得重登 → 验证码）
-- 🛡️ 有反爬的页面（Cloudflare "验证你是人类" → 永远转圈）
-- ✍️ 富文本编辑器（ProseMirror/Draft.js → DOM 填了但框架状态没变，提交发的是旧内容）
-
-Safari Web Agent 三个全解决。
-
-### 和 Playwright 的核心区别
-
-| 场景 | Playwright | Safari Web Agent |
-|------|-----------|------------------|
-| 打开 Gmail/Notion | 要重新登录，可能触发验证码 | 你的 Safari 已经登着 ✅ |
-| Cloudflare 防护的网站 | 卡在"Just a moment..." | `native_click` 原生事件直接过 ✅ |
-| Notion/Linear 编辑器 | `fill()` 改了 DOM，但提交时内容消失 ❌ | `native_type` 走剪贴板粘贴，框架状态同步 ✅ |
-| 安装体积 | ~500MB | 0（Safari 预装） |
-
-### 安装
-
-```bash
-# 一键安装
-curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
-
-# 或手动
-npm install -g safari-mcp     # MCP 服务器
-# 然后去 Safari → 偏好设置 → 扩展 → 启用 "Safari MCP"
-# 系统设置 → 隐私与安全性 → 自动化 → 允许终端控制 Safari
-# 系统设置 → 隐私与安全性 → 辅助功能 → 允许终端
-```
-
-### 使用场景
+## 🎯 使用场景
 
 1. **登录态抓取** — 从你已经登录的网站提取数据（后台、卖家中心、CRM）
 2. **反爬绕过** — 原生事件过 Cloudflare/DataDome/Akamai
@@ -217,11 +110,51 @@ npm install -g safari-mcp     # MCP 服务器
 4. **Safari 兼容性测试** — PWA 审计、viewport 验证、WebKit CSS 检查
 5. **页面监控** — 定时检查页面变化、Web Vitals
 
+## 📚 文档
+
+| 文件 | 内容 |
+|------|------|
+| [SKILL.md](SKILL.md) | 核心 Skill — 触发条件、工作流、常见坑 |
+| [references/tools-reference.md](references/tools-reference.md) | Safari MCP 96 个工具完整目录 |
+| [references/anti-detection.md](references/anti-detection.md) | 反爬绕过技术手册 |
+| [references/workflow-patterns.md](references/workflow-patterns.md) | 可复用的自动化模式 |
+| [examples/](examples/) | 真实场景示例 |
+
+---
+
+## English
+
+### What is this?
+
+A **Hermes Agent Skill** that gives AI agents the power to control your real Safari browser — with your login sessions, cookies, and native macOS events that bypass anti-bot detection.
+
+Most web automation tools (Playwright, Puppeteer, Selenium) launch a fresh headless browser. They fail on:
+- 🔐 Login-walled sites (no cookies → re-auth → CAPTCHA)
+- 🛡️ Anti-bot pages (Cloudflare blocks headless Chrome)
+- ✍️ Rich text editors (DOM fill ≠ framework state sync)
+
+Safari Web Agent solves all three.
+
+### Quick Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
+```
+
+### Why Safari over Playwright?
+
+| Scenario | Playwright | Safari Web Agent |
+|----------|-----------|------------------|
+| Gmail, Notion, etc. | Re-login, CAPTCHA risk | Already logged in ✅ |
+| Cloudflare-protected | Stuck on challenge | Native events bypass ✅ |
+| ProseMirror editors | DOM fill → stale state ❌ | Native paste → synced ✅ |
+| Install size | ~500MB | 0 (Safari built-in) |
+
 ---
 
 ## License
 
-MIT — use it, fork it, ship it.
+MIT
 
 ## Credits
 
