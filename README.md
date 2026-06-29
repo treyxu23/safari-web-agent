@@ -26,7 +26,7 @@
 
 ## 🦊 解法
 
-**Safari Web Agent** — 一个 Hermes Skill，操控你**真实的 Safari 浏览器**。
+**Safari Web Agent** — Claude Code & Hermes Skill，操控你**真实的 Safari 浏览器**。96 个 Safari MCP 工具，原生 macOS CGEvent 事件。零安装（Safari 预装）。
 
 ```bash
 # 你的 Safari 已经登录了 Gmail、Notion、GitHub、飞书、淘宝……
