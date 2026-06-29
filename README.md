@@ -4,7 +4,7 @@
   <img alt="Safari Web Agent — 用你真实的 Safari 浏览器做网页自动化" src="assets/banner.svg" width="100%">
 </picture>
 
-[![SKILL.md Valid](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml/badge.svg)](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml)
+[![SKILL.md Valid](https://github.com/treyxu23/trey-safari-web-agent/actions/workflows/validate.yml/badge.svg)](https://github.com/treyxu23/trey-safari-web-agent/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)](https://github.com/achiya-automation/safari-mcp)
 [![Hermes Skill](https://img.shields.io/badge/Hermes-Skill-blue)](https://github.com/nousresearch/hermes-agent)
@@ -242,7 +242,7 @@ npm install -g safari-mcp
 ```
 
 ### 一键安装脚本
-curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/treyxu23/trey-safari-web-agent/main/scripts/install.sh | bash
 
 # 或手动
 npm install -g safari-mcp     # MCP 服务器
@@ -268,7 +268,7 @@ mcp_servers:
 安装 Skill：
 
 ```bash
-git clone https://github.com/treyxu23/safari-web-agent.git \
+git clone https://github.com/treyxu23/trey-safari-web-agent.git \
   ~/.hermes/profiles/<profile>/skills/safari-web-agent/
 ```
 
@@ -311,7 +311,7 @@ Safari Web Agent solves all three.
 ### Quick Install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/treyxu23/trey-safari-web-agent/main/scripts/install.sh | bash
 ```
 
 ### Comparison

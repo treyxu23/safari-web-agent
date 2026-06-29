@@ -10,4 +10,4 @@
 | 🎬 在线课程信息提取 | 之了课堂（腾讯云 VOD DRM） | 绕过 DRM 页面，提取课程列表和元数据 |
 | 🧪 GitHub Token 创建自动化 | GitHub Settings（sudo 模式） | 自动填表、勾选 scope、生成 PAT |
 
-> 你的场景是什么？[提 Issue](https://github.com/treyxu23/safari-web-agent/issues/new) 告诉我们。
+> 你的场景是什么？[提 Issue](https://github.com/treyxu23/trey-safari-web-agent/issues/new) 告诉我们。
