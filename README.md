@@ -335,6 +335,10 @@ curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scri
 
 ---
 
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=treyxu23/safari-web-agent&type=Date)](https://star-history.com/#treyxu23/safari-web-agent&Date)
+
 ## License
 
 MIT
