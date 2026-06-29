@@ -77,5 +77,5 @@
   <!-- Bottom bar -->
   <rect x="0" y="560" width="1200" height="40" fill="#161b22" opacity="0.8"/>
   <text x="30" y="585" font-family="PingFang SC,Microsoft YaHei,sans-serif" font-size="13" fill="#8b949e">Hermes Skill · 仅限 macOS · 零安装（Safari 预装） · 96 个工具 via Safari MCP</text>
-  <text x="1170" y="585" font-family="ui-monospace,SFMono-Regular" font-size="13" fill="#58a6ff" text-anchor="end">treyxu23/trey-safari-web-agent</text>
+  <text x="1170" y="585" font-family="ui-monospace,SFMono-Regular" font-size="13" fill="#58a6ff" text-anchor="end">treyxu23/safari-web-agent</text>
 </svg>

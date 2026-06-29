@@ -4,7 +4,7 @@
 # and verifies the setup.
 #
 # Usage:
-#   curl -fsSL https://raw.githubusercontent.com/treyxu23/trey-safari-web-agent/main/scripts/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
 #   OR
 #   chmod +x install.sh && ./install.sh
 
@@ -155,7 +155,7 @@ echo -e "     ${BOLD}    enabled: true${NC}"
 echo -e "     ${BOLD}    timeout: 120${NC}"
 echo ""
 echo "  2. Install this skill:"
-echo "     git clone https://github.com/treyxu23/trey-safari-web-agent.git \\"
+echo "     git clone https://github.com/treyxu23/safari-web-agent.git \\"
 echo "       ~/.hermes/profiles/<profile>/skills/safari-web-agent/"
 echo ""
 echo "  3. Run safari_doctor to diagnose any permission issues:"
