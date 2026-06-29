@@ -1,0 +1,21 @@
+{
+  "name": "safari-web-agent",
+  "version": "1.0.0",
+  "description": "使用真实 Safari 浏览器的网页自动化 Skill。96 个 Safari MCP 工具，原生 macOS CGEvent 事件，零安装。需要 Safari MCP。",
+  "author": {
+    "name": "徐二三 (trey)"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/treyxu23/safari-web-agent",
+  "keywords": [
+    "claude-skill",
+    "claude-code",
+    "safari",
+    "browser-automation",
+    "web-scraping",
+    "anti-detection",
+    "macos",
+    "mcp"
+  ],
+  "category": "automation"
+}

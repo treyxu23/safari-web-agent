@@ -7,6 +7,7 @@
 [![SKILL.md Valid](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml/badge.svg)](https://github.com/treyxu23/safari-web-agent/actions/workflows/validate.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS-lightgrey)](https://github.com/achiya-automation/safari-mcp)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-8A2BE2)](https://github.com/treyxu23/safari-web-agent)
 [![Hermes Skill](https://img.shields.io/badge/Hermes-Skill-blue)](https://github.com/nousresearch/hermes-agent)
 
 ---
@@ -232,26 +233,28 @@ safari_evaluate(`document.querySelector('.js-token-field')?.textContent?.trim()`
 
 ## 📦 安装
 
-### ⚡ 30 秒上手
+> 支持 **Claude Code** 和 **Hermes** 两种 AI Agent。
+
+### Claude Code
 
 ```bash
+# 1. Safari MCP
 npm install -g safari-mcp
 # Safari → 设置 → 扩展 → 启用 "Safari MCP"
-# 系统设置 → 隐私 → 自动化 → 允许终端控制 Safari
-# 搞定。下面是详细步骤，遇到问题再看。
+
+# 2. 配置 ~/.claude/claude_desktop_config.json：
+{
+  "mcpServers": {
+    "safari": { "command": "npx", "args": ["safari-mcp"] }
+  }
+}
+
+# 3. 安装 Skill（在 Claude Code 中运行）：
+/plugin marketplace add treyxu23/safari-web-agent
+/plugin install safari-web-agent@safari-web-agent
 ```
 
-### 一键安装脚本
-curl -fsSL https://raw.githubusercontent.com/treyxu23/safari-web-agent/main/scripts/install.sh | bash
-
-# 或手动
-npm install -g safari-mcp     # MCP 服务器
-# Safari → 设置 → 扩展 → 启用 "Safari MCP"
-# 系统设置 → 隐私与安全性 → 自动化 → 允许终端控制 Safari
-# 系统设置 → 隐私与安全性 → 辅助功能 → 允许终端
-```
-
-### 接入 Hermes
+### Hermes
 
 `~/.hermes/profiles/<profile>/config.yaml`:
 

@@ -107,6 +107,35 @@ When publishing requires new tokens or auth scope changes:
 
 Full details in `references/github-token-automation.md`.
 
+## 7. Examples: Real Code, Not Pseudocode
+
+The user will call out hand-wavy examples immediately. Every example must be:
+
+**❌ Pseudocode (gets rejected):**
+```
+safari_navigate("京东搜索")
+safari_evaluate(extract_price) → ¥7999
+✅ 三平台比价，15 秒
+```
+
+**✅ Real code (passes):**
+```javascript
+safari_navigate("https://search.jd.com/Search?keyword=iPhone+16+Pro+256G&enc=utf-8")
+safari_wait_for(selector=".gl-item")
+safari_evaluate(`document.querySelector('.gl-item .p-price i')?.textContent`)
+// → "7999.00"
+```
+
+Rules:
+- **Real URLs** — never "卖家中心" or "京东搜索", always the actual `https://` URL
+- **Real selectors** — never `extract_price`, always `document.querySelector('.gl-item .p-price i')`
+- **Real output** — never `→ ¥7999`, always `→ "7999.00"` (show actual return format)
+- **Real numbers** — never "30 秒" without evidence; if you don't know, don't claim
+- **Explain WHY** — after each example, one sentence on why it works where competitors fail
+- **Show the error case** — for rich text editors, show the ❌ `fill()` approach first, then the ✅ `native_type()` fix
+
+This is the #1 thing that separates a convincing README from a hand-wavy one. The user knows the difference instantly.
+
 ## Checklist
 
 - [ ] `gh repo edit` — description, topics, homepage set
@@ -117,4 +146,6 @@ Full details in `references/github-token-automation.md`.
 - [ ] Banner SVG in `assets/` with Chinese text
 - [ ] `scripts/install.sh` exists and is executable
 - [ ] `scripts/validate-skill.py` works locally
-- [ ] First CI run triggered and passed (badge goes green)
+- [ ] All code examples use real URLs, real selectors, real output (no pseudocode)
+- [ ] Error-vs-fix contrast shown for at least one scenario (❤️❌→✅ pattern)
+- [ ] Every example includes a one-line "why it works" explanation
